@@ -15,33 +15,40 @@ export default class Model {
             this.currentId = 1;
         }else {
             this.currentId = this.todos[this.todos.length -1].id + 1;
-        
         }
         
-    }
-
-    save() {
-        localStorage.setItem('todos', JSON.stringify(this.todos));
     }
 
     setView(view) {
         this.view = view;
     }
 
+    save() {
+        localStorage.setItem('todos', JSON.stringify(this.todos));
+    }
+
     getTodos() {
         return this.todos;
     }
 
-    //retorna el index de un todo
+    //retorna el index de un "todo"
     findTodo(id) {
         return this.todos.findIndex((todo) => todo.id === id);
+    }
+
+    //no persiste los cambios hecho en el toggle
+    editTodo(id, values) {
+        const index = this.findTodo(id);
+        // modifica solamente los valores
+        Object.assign(this.todos[index], values);
+        this.save();
     }
 
     toggleCompleted(id) {
         const index = this.findTodo(id);
         const todo = this.todos[index];
         todo.completed = !todo.completed;
-        console.log(this.todos);
+        this.save();
     }
 
     addTodo(title, description) {
@@ -54,12 +61,16 @@ export default class Model {
         }
         this.todos.push(todo);
         console.log(this.todos);
+        this.save();
 
         //devuelve un clon de ese objeto
         return {...todo};
     }
+
     removeTodo(id) {
         const index = this.findTodo(id);
+        //elimina solo el todo correspondiente al id
         this.todos.splice(index, 1);
+        this.save();
     }
 }
