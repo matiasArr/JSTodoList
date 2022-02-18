@@ -28,7 +28,7 @@ export default class Model {
     }
 
     getTodos() {
-        return this.todos;
+        return this.todos.map((todo) => ({...todo}));
     }
 
     //retorna el index de un "todo"

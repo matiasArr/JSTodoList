@@ -1,14 +1,19 @@
 import AddTodo from './components/add-todo.js';
 import Modal from './components/modal.js';
+import Filters from './components/filters.js';
 
 export default class View{
     constructor() {
         this.model = null;
         this.table = document.getElementById('table');
+        //instancia de las clases
         this.addTodoForm = new AddTodo();
         this.modal = new Modal();  
+        this.filters = new Filters();
+
         this.addTodoForm.onClick((title, description) => this.addTodo(title, description));
-        this.modal.onClick((id, values) => this.editTodo(id, values));     
+        this.modal.onClick((id, values) => this.editTodo(id, values));
+        this.filters.onClick((filters) => this.filter(filters));     
     }
     
     setModel(model) {
@@ -31,6 +36,32 @@ export default class View{
         row.children[0].innerText = values.title;
         row.children[1].innerText = values.description;
         row.children[2].children[0].checked = values.completed;
+    }
+
+    filter(filters) {
+        //destructuring
+        const { type, words } = filters;
+        const [, ...rows] = this.table.getElementsByTagName('tr');
+        for(const row of rows) {
+            const [title, description, completed] = row.children;
+            let shoulHide = false;
+
+            if(words) {
+                shoulHide = !title.innerText.includes(words) && !description.innerText.includes(words);
+            }
+            console.log(row, shoulHide);
+            const shoulBeCompleted = type === 'completed';
+            const isCompleted = completed.children[0].checked;
+
+            if (type !== 'all' && shoulBeCompleted !== isCompleted) {
+                shoulHide = true;
+            }
+            if (shoulHide) {
+                row.classList.add('d-none');
+            } else {
+                row.classList.remove('d-none');
+            }
+        }
     }
 
     toggleCompleted(id) {
